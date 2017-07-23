@@ -6,37 +6,37 @@
 
 #IncludeRegexTransform: 
 
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/DifferentialEvolution.h
+/cygdrive/d/Git/mag_de/headers/DifferentialEvolution.h
 random
 -
 
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/TrigonometryOperations.h
+/cygdrive/d/Git/mag_de/headers/TrigonometryOperations.h
 
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/VectorOperations.h
+/cygdrive/d/Git/mag_de/headers/VectorOperations.h
 
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/sources/DifferentialEvolution.cpp
+/cygdrive/d/Git/mag_de/sources/DifferentialEvolution.cpp
 iostream
 -
 chrono
 -
 ../headers/DifferentialEvolution.h
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/DifferentialEvolution.h
+/cygdrive/d/Git/mag_de/headers/DifferentialEvolution.h
 ../headers/VectorOperations.h
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/VectorOperations.h
+/cygdrive/d/Git/mag_de/headers/VectorOperations.h
 ../headers/TrigonometryOperations.h
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/TrigonometryOperations.h
+/cygdrive/d/Git/mag_de/headers/TrigonometryOperations.h
 
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/sources/TrigonometryOperations.cpp
+/cygdrive/d/Git/mag_de/sources/TrigonometryOperations.cpp
 math.h
 -
 ../headers/TrigonometryOperations.h
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/TrigonometryOperations.h
+/cygdrive/d/Git/mag_de/headers/TrigonometryOperations.h
 
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/sources/VectorOperations.cpp
+/cygdrive/d/Git/mag_de/sources/VectorOperations.cpp
 ../headers/VectorOperations.h
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/VectorOperations.h
+/cygdrive/d/Git/mag_de/headers/VectorOperations.h
 
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/sources/main.cpp
+/cygdrive/d/Git/mag_de/sources/main.cpp
 ../headers/DifferentialEvolution.h
-/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/DifferentialEvolution.h
+/cygdrive/d/Git/mag_de/headers/DifferentialEvolution.h
 
