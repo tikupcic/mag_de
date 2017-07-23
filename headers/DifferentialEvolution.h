@@ -25,6 +25,7 @@ private:
 
     std::default_random_engine random_engine;
     std::uniform_real_distribution<double> RANDOM_0_1;
+    std::uniform_real_distribution<double> RANDOM_0_N;
     std::uniform_int_distribution<int> RANDOM_0_NP;
 
     float setInitialIndividualValue(const int dimension_index);
