@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/DifferentialEvolution.h
+random
+-
+
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/TrigonometryOperations.h
+
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/VectorOperations.h
+
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/sources/DifferentialEvolution.cpp
+iostream
+-
+chrono
+-
+../headers/DifferentialEvolution.h
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/DifferentialEvolution.h
+../headers/VectorOperations.h
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/VectorOperations.h
+../headers/TrigonometryOperations.h
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/TrigonometryOperations.h
+
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/sources/TrigonometryOperations.cpp
+math.h
+-
+../headers/TrigonometryOperations.h
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/TrigonometryOperations.h
+
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/sources/VectorOperations.cpp
+../headers/VectorOperations.h
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/VectorOperations.h
+
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/sources/main.cpp
+../headers/DifferentialEvolution.h
+/cygdrive/c/Users/Timi/CLionProjects/DE_implementation/headers/DifferentialEvolution.h
+
