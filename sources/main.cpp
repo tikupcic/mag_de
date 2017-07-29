@@ -25,8 +25,8 @@
 
 int main() {
 
-    DifferentialEvolution *DE = new DifferentialEvolution(1000, 4, 100, .5, .9);
-    DE->start(new float[3]{3,4,2});
+    DifferentialEvolution *DE = new DifferentialEvolution(1000, 6, 500, .4, .9);
+    DE->start(new float[3]{350,350,350});
 
     delete DE;
     return 0;

@@ -12,8 +12,8 @@
 DifferentialEvolution::DifferentialEvolution(int NP, int D, int Gmax, float C, float F)
         : POPULATION_SIZE(NP), DIMENSION(D), MAX_GEN_NUMBER(Gmax), CROSSOVER_RATE(C), MUTATION_FACTOR(F) {
 
-    min_bounds = new float[DIMENSION]{0, 2, 0, 2};
-    max_bounds = new float[DIMENSION]{-360, 5, -90, 5};
+    min_bounds = new float[DIMENSION]{-160, 671.83, -125, 431.8, -135, 433.07};
+    max_bounds = new float[DIMENSION]{160, 671.83, 125, 431.8, 135, 433.07};
 
     random_engine.seed((unsigned long) std::chrono::system_clock::now().time_since_epoch().count());
     RANDOM_0_1.param(std::uniform_real_distribution<>::param_type{0.0, 1.0});
@@ -76,11 +76,14 @@ void DifferentialEvolution::crossover(float **population, float **donor_vectors)
         trial_vectors[i] = new float[DIMENSION];
         for (int j = 0; j < DIMENSION; j++) {
             if ((float) RANDOM_0_1(random_engine) <= CROSSOVER_RATE) {
+                float donor = donor_vectors[i][j];
+                float min = min_bounds[j];
+                float max = max_bounds[j];
                 if (donor_vectors[i][j] < min_bounds[j]) {
                     float temp = min_bounds[j] - donor_vectors[i][j];
                     RANDOM_0_N.param(std::uniform_real_distribution<>::param_type{0.0, temp});
                     trial_vectors[i][j] = min_bounds[j] + (float) RANDOM_0_N(random_engine);
-                }else if (donor_vectors[i][j] > max_bounds[j]) {
+                } else if (donor_vectors[i][j] > max_bounds[j]) {
                     float temp = donor_vectors[i][j] - max_bounds[j];
                     RANDOM_0_N.param(std::uniform_real_distribution<>::param_type{0.0, temp});
                     trial_vectors[i][j] = max_bounds[j] - (float) RANDOM_0_N(random_engine);
@@ -94,11 +97,10 @@ void DifferentialEvolution::crossover(float **population, float **donor_vectors)
     }
 
 //    for (int i = 0; i < POPULATION_SIZE; i++) {
-//        std::cout << "[" ;
 //        for (int j = 0; j < DIMENSION; j++) {
-//            std::cout << trial_vectors[i][j]<< ",\t";
+//            std::cout<<trial_vectors[i][j]<<", ";
 //        }
-//        std::cout << "]" << std::endl;
+//        std::cout<<std::endl;
 //    }
 
     selection(population, trial_vectors);
@@ -108,17 +110,28 @@ void DifferentialEvolution::crossover(float **population, float **donor_vectors)
 float bestIndividualFitness = std::numeric_limits<float>::max();
 float *bestIndividual;
 
+int n = 0;
+
 void DifferentialEvolution::selection(float **population, float **trial_vectors) {
+    bool foundBetter = false;
     for (int i = 0; i < POPULATION_SIZE; i++) {
         float trial = fitnessFunction(trial_vectors[i]);
         float parent = fitnessFunction(population[i]);
         if (trial <= parent) {
             population[i] = trial_vectors[i];
+
             if (trial < bestIndividualFitness) {
                 bestIndividualFitness = trial;
                 bestIndividual = population[i];
+                foundBetter = true;
             }
         }
+    }
+
+    if(foundBetter) {
+        n = 0;
+    } else {
+        n++;
     }
 
     terminate(population);
@@ -126,15 +139,15 @@ void DifferentialEvolution::selection(float **population, float **trial_vectors)
 
 // TERMINATE
 void DifferentialEvolution::terminate(float **population) {
-    if (++current_generation < MAX_GEN_NUMBER) {
-        std::cout << "\t>" << current_generation << " generation: ";
-        printf("%.5f", bestIndividualFitness);
-        std::cout << std::endl;
+    if (bestIndividualFitness > 3 && ++current_generation < MAX_GEN_NUMBER && n < 15) {
+//        std::cout << "\t>" << current_generation << " generation: ";
+//        printf("%.5f", bestIndividualFitness);
+//        std::cout << std::endl;
         mutate(population);
     } else {
         std::cout << "> DE completed!" << std::endl;
-        std::cout << "> Best: ";
-        printf("%.5f", bestIndividualFitness);
+        std::cout << "> Error: ";
+        printf("%.2f mm", bestIndividualFitness);
         std::cout << std::endl << "{";
         for (int i = 0; i < DIMENSION; i++) {
             std::cout << bestIndividual[i] << "f";
@@ -156,11 +169,13 @@ float DifferentialEvolution::fitnessFunction(float *vector) {
     float x = vector[1];
     float b = vector[2];
     float y = vector[3];
+    float c = vector[4];
+    float z = vector[5];
 
     float *HAND_POSITION = new float[3]{
-            (-1) * y * cos(a) * sin(b),
-            x + y * cos(b),
-            y * sin(a) * sin(b)
+            (cos(a) * cos(b) * (-1) * sin(c) - cos(a) * sin(b) * cos(c)) * z - y * cos(a) * sin(b),
+            ((-1) * sin(c) * sin(b) + cos(b) * cos(c)) * z + x + y * cos(b),
+            ((-1) * cos(b) * sin(a) * (-1) * sin(c) + sin(a) * sin(b) * cos(c)) * z + y * sin(a) * sin(b)
     };
 
     float sum = 0;
