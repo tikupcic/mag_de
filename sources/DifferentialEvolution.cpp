@@ -139,7 +139,7 @@ void DifferentialEvolution::selection(float **population, float **trial_vectors)
 
 // TERMINATE
 void DifferentialEvolution::terminate(float **population) {
-    if (bestIndividualFitness > 3 && ++current_generation < MAX_GEN_NUMBER && n < 15) {
+    if (bestIndividualFitness > 3 && ++current_generation < MAX_GEN_NUMBER && n < 25) {
 //        std::cout << "\t>" << current_generation << " generation: ";
 //        printf("%.5f", bestIndividualFitness);
 //        std::cout << std::endl;
