@@ -26,7 +26,7 @@
 
 int main() {
 
-    auto DE = new OptimizedDE(1000, 3, 500, .5, .9);
+    auto DE = new OptimizedDE(1000, 3, 1000, .5, .9);
 
     clock_t begin = clock();
     DE->begin(new float[3]{350, 350, 350});

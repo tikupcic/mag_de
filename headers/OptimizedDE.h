@@ -20,7 +20,7 @@ private:
     const float LENGTH_ARM_2 = 431.8;
     const float LENGTH_ARM_3 = 433.07;
     const float ROTATION_WAIST = 320;
-    const float ROTATION_SHOULDER= 250;
+    const float ROTATION_SHOULDER = 250;
     const float ROTATION_ELBOW = 270;
 
     const int localMinThreshold = 15;
@@ -41,6 +41,18 @@ private:
 
     int currentGeneration;
 
+    const float ERROR_WAIST = 0.01f;
+    const float ERROR_SHOULDER = 0.01f;
+    const float ERROR_ELBOW = 0.01f;
+    const float *ERRORS = new float[3] {ERROR_WAIST, ERROR_SHOULDER, ERROR_ELBOW};
+    const float TAGUCHI_OA[4][3] =
+            {
+                    {1,  1,  1},
+                    {1,  -1, -1},
+                    {-1, 1,  -1},
+                    {-1, -1, 1}
+            };
+
 public:
     OptimizedDE(const int POPULATION_SIZE, const int DIMENSION, const int MAX_GEN_NUMBER, const float CROSSOVER_RATE,
                 const float MUTATION_FACTOR);
@@ -48,8 +60,13 @@ public:
     virtual ~OptimizedDE();
 
     float setInitialIndividualValue(const int index);
+
     float fitnessFunction(const float *vector);
+
+    float fitnessByTaguchiOA(const float *vector);
+
     void initialize();
+
     void begin(float *wantedEndpoint);
 };
 

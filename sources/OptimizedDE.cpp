@@ -58,6 +58,7 @@ void OptimizedDE::initialize() {
 }
 
 float bestIndividualFitness = std::numeric_limits<float>::max();
+float* bestIndividual = new float[3];
 
 void OptimizedDE::begin(float *wantedEndpoint) {
     this->wantedEndpoint = wantedEndpoint;
@@ -101,12 +102,13 @@ void OptimizedDE::begin(float *wantedEndpoint) {
         //selection
         bool foundBetter = false;
         for (int i = 0; i < POPULATION_SIZE; i++) {
-            float trial = fitnessFunction(trial_vectors[i]);
-            float parent = fitnessFunction(population[i]);
+            float trial = fitnessByTaguchiOA(trial_vectors[i]);
+            float parent = fitnessByTaguchiOA(population[i]);
             if (trial <= parent) {
                 population[i] = trial_vectors[i];
                 if (trial < bestIndividualFitness) {
                     bestIndividualFitness = trial;
+                    bestIndividual = trial_vectors[i];
                     foundBetter = true;
                 }
             }
@@ -117,13 +119,28 @@ void OptimizedDE::begin(float *wantedEndpoint) {
         } else {
             localMinCounter++;
         }
-
-        printf("\t>%d - %.2f mm ... %d\n",currentGeneration, bestIndividualFitness, localMinCounter);
+//        printf("\t> Current: %.2f mm\n", bestIndividualFitness);
     } while (++currentGeneration < MAX_GEN_NUMBER && localMinCounter < localMinThreshold - 1);
 
-    std::cout << "> Error: ";
-    printf("%.2f mm\n", bestIndividualFitness);
+    printf("> BEST: %.2f mm\n with: [%f, %f, %f]\n", bestIndividualFitness, bestIndividual[0], bestIndividual[1], bestIndividual[2]);
+    printf("> BEST w/o OA: %.2f mm\n", fitnessFunction(bestIndividual));
 }
+
+float OptimizedDE::fitnessByTaguchiOA(const float *vector) {
+    float *temp = new float[DIMENSION];
+    float error_sum = 0;
+    float error;
+
+    for(int test = 0; test < 4; test++) {
+        for (int i = 0; i < DIMENSION; i++) {
+            temp[i] = vector[i] + (TAGUCHI_OA[test][i] * ERRORS[i] * vector[i]);
+        }
+        error = fitnessFunction(temp);
+        error_sum += error;
+    }
+
+    return error_sum / 4;
+};
 
 float OptimizedDE::setInitialIndividualValue(const int index) {
     return min_bounds[index] +
