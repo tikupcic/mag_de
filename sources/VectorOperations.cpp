@@ -27,3 +27,11 @@ float *multiplyVectorByScalar(float scalar, float *vector, int d) {
     }
     return temp;
 }
+
+float *mutationVectorOperation(float *a1, float *a2, float *a3, float F, int dimen) {
+    float *temp = new float[dimen];
+    for (int i = 0; i < dimen; i++) {
+        temp[i] = a1[i] + (F * (a2[i] - a3[i]));
+    }
+    return temp;
+}

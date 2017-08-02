@@ -11,4 +11,6 @@ float *subtractTwoVectors(float *vector_a, float *vector_b, int d);
 
 float *multiplyVectorByScalar(float scalar, float *vector, int d);
 
+float *mutationVectorOperation(float *a1, float *a2, float *a3, float F, int dimen);
+
 #endif //DE_IMPLEMENTATION_VECTOROPERATIONS_H

@@ -23,10 +23,16 @@ OptimizedDE::OptimizedDE(const int POPULATION_SIZE, const int DIMENSION, const i
     random_engine.seed((unsigned long) std::chrono::system_clock::now().time_since_epoch().count());
     RANDOM_0_1.param(std::uniform_real_distribution<>::param_type{0.0, 1.0});
     RANDOM_0_NP.param(std::uniform_int_distribution<>::param_type{0, POPULATION_SIZE - 1});
+
+    bestIndividualFitness = std::numeric_limits<float>::max();
 }
 
 // DESTRUCTOR
 OptimizedDE::~OptimizedDE() {
+    delete[] min_bounds;
+    delete[] max_bounds;
+    delete[] ERRORS;
+
     for (int i = 0; i < POPULATION_SIZE; i++) {
         delete[] population[i];
         delete[] donor_vectors[i];
@@ -36,8 +42,8 @@ OptimizedDE::~OptimizedDE() {
     delete[] population;
     delete[] donor_vectors;
     delete[] trial_vectors;
-    delete[] min_bounds;
-    delete[] max_bounds;
+    delete bestIndividual;
+    delete wantedEndpoint;
 }
 
 // METHODS
@@ -48,6 +54,9 @@ void OptimizedDE::initialize() {
 
     for (int i = 0; i < POPULATION_SIZE; i++) {
         population[i] = new float[DIMENSION];
+        donor_vectors[i] = new float[DIMENSION];
+        trial_vectors[i] = new float[DIMENSION];
+
         for (int j = 0; j < DIMENSION; j++) {
             population[i][j] = setInitialIndividualValue(j);
         }
@@ -55,12 +64,13 @@ void OptimizedDE::initialize() {
 
     currentGeneration = 0;
     localMinCounter = 0;
+    bestIndividualFitness = std::numeric_limits<float>::max();
+    bestIndividual = new float[3];
 }
 
-float bestIndividualFitness = std::numeric_limits<float>::max();
-float* bestIndividual = new float[3];
 
-void OptimizedDE::begin(float *wantedEndpoint) {
+
+float OptimizedDE::begin(float *wantedEndpoint) {
     this->wantedEndpoint = wantedEndpoint;
     initialize();
 
@@ -72,9 +82,11 @@ void OptimizedDE::begin(float *wantedEndpoint) {
             do r2 = RANDOM_0_NP(random_engine); while (r2 == i || r2 == r1);
             do r3 = RANDOM_0_NP(random_engine); while (r3 == i || r3 == r2 || r3 == r1);
 
-            donor_vectors[i] = subtractTwoVectors(population[r2], population[r3], DIMENSION);
-            donor_vectors[i] = multiplyVectorByScalar(MUTATION_FACTOR, donor_vectors[i], DIMENSION);
-            donor_vectors[i] = addTwoVectors(donor_vectors[i], population[r1], DIMENSION);
+            donor_vectors[i] = mutationVectorOperation(population[r1],
+                                                       population[r2],
+                                                       population[r3],
+                                                       MUTATION_FACTOR,
+                                                       DIMENSION);
         }
 
         // crossover
@@ -102,8 +114,8 @@ void OptimizedDE::begin(float *wantedEndpoint) {
         //selection
         bool foundBetter = false;
         for (int i = 0; i < POPULATION_SIZE; i++) {
-            float trial = fitnessByTaguchiOA(trial_vectors[i]);
-            float parent = fitnessByTaguchiOA(population[i]);
+            float trial = fitnessFunction(trial_vectors[i]);
+            float parent = fitnessFunction(population[i]);
             if (trial <= parent) {
                 population[i] = trial_vectors[i];
                 if (trial < bestIndividualFitness) {
@@ -117,13 +129,15 @@ void OptimizedDE::begin(float *wantedEndpoint) {
         if(foundBetter) {
             localMinCounter = 0;
         } else {
-            localMinCounter++;
+            if(++localMinCounter == localMinThreshold) {
+                break;
+            }
         }
-//        printf("\t> Current: %.2f mm\n", bestIndividualFitness);
-    } while (++currentGeneration < MAX_GEN_NUMBER && localMinCounter < localMinThreshold - 1);
+//        printf("\t> CURRENT (gen %d): %.2f mm\n", currentGeneration, bestIndividualFitness);
+    } while (++currentGeneration < MAX_GEN_NUMBER && bestIndividualFitness > errorThreshold);
 
-    printf("> BEST: %.2f mm\n with: [%f, %f, %f]\n", bestIndividualFitness, bestIndividual[0], bestIndividual[1], bestIndividual[2]);
-    printf("> BEST w/o OA: %.2f mm\n", fitnessFunction(bestIndividual));
+    printf("> BEST: %.2f mm : [%f, %f, %f]\n", bestIndividualFitness, bestIndividual[0], bestIndividual[1], bestIndividual[2]);
+    return bestIndividualFitness;
 }
 
 float OptimizedDE::fitnessByTaguchiOA(const float *vector) {
@@ -138,7 +152,7 @@ float OptimizedDE::fitnessByTaguchiOA(const float *vector) {
         error = fitnessFunction(temp);
         error_sum += error;
     }
-
+    delete[] temp;
     return error_sum / 4;
 };
 

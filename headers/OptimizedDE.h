@@ -23,7 +23,8 @@ private:
     const float ROTATION_SHOULDER = 250;
     const float ROTATION_ELBOW = 270;
 
-    const int localMinThreshold = 15;
+    const int localMinThreshold = MAX_GEN_NUMBER / 10;
+    const float errorThreshold = 1;
     int localMinCounter;
 
     float *min_bounds;
@@ -40,7 +41,10 @@ private:
     float *wantedEndpoint;
 
     int currentGeneration;
+    float bestIndividualFitness;
+    float* bestIndividual;
 
+    // TAGUCHI's OA dependent arrays
     const float ERROR_WAIST = 0.01f;
     const float ERROR_SHOULDER = 0.01f;
     const float ERROR_ELBOW = 0.01f;
@@ -67,7 +71,7 @@ public:
 
     void initialize();
 
-    void begin(float *wantedEndpoint);
+    float begin(float *wantedEndpoint);
 };
 
 #endif //MAG_DE_OPTIMIZEDDE_H
