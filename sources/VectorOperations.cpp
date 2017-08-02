@@ -2,6 +2,7 @@
 // Created by Timi on 6. 07. 2017.
 //
 
+#include <vector>
 #include "../headers/VectorOperations.h"
 
 float *addTwoVectors(float *vector_a, float *vector_b, int d) {
@@ -28,10 +29,10 @@ float *multiplyVectorByScalar(float scalar, float *vector, int d) {
     return temp;
 }
 
-float *mutationVectorOperation(float *a1, float *a2, float *a3, float F, int dimen) {
-    float *temp = new float[dimen];
+std::vector<float> mutationVectorOperation(std::vector<float> a1, std::vector<float> a2, std::vector<float> a3, float F, int dimen) {
+    std::vector<float> temp;
     for (int i = 0; i < dimen; i++) {
-        temp[i] = a1[i] + (F * (a2[i] - a3[i]));
+        temp.push_back(a1[i] + (F * (a2[i] - a3[i])));
     }
     return temp;
 }

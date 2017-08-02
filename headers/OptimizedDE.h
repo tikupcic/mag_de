@@ -6,72 +6,65 @@
 #define MAG_DE_OPTIMIZEDDE_H
 
 #include <random>
+#include "Robot3DOF.h"
 
 class OptimizedDE {
 
 private:
-    const int POPULATION_SIZE;        //NP
-    const int DIMENSION;              //D
-    const int MAX_GEN_NUMBER;         //Gmax
-    const float CROSSOVER_RATE;       //C
-    const float MUTATION_FACTOR;      //F
+    const Robot3DOF ROBOT;
 
-    const float LENGTH_ARM_1 = 671.83;
-    const float LENGTH_ARM_2 = 431.8;
-    const float LENGTH_ARM_3 = 433.07;
-    const float ROTATION_WAIST = 320;
-    const float ROTATION_SHOULDER = 250;
-    const float ROTATION_ELBOW = 270;
+    const int POPULATION_SIZE;        // NP
+    const int DIMENSION;              // D
+    const float CROSSOVER_RATE;       // C
+    const float MUTATION_FACTOR;      // F
 
-    const int localMinThreshold = MAX_GEN_NUMBER / 10;
-    const float errorThreshold = 1;
-    int localMinCounter;
+    const int TERM_MAX_GEN_NUMBER;    // terminate if max number of gen. is reached
+    const float TERM_ERROR_THRESH;    // terminate if result is better or equal
+    const int TERM_REPEAT_THRESH;     // terminate if stuck at local max for N generations
 
-    float *min_bounds;
-    float *max_bounds;
+    std::vector<float> min_bounds;
+    std::vector<float> max_bounds;
 
     std::default_random_engine random_engine;
     std::uniform_real_distribution<double> RANDOM_0_1;
     std::uniform_real_distribution<double> RANDOM_0_N;
     std::uniform_int_distribution<int> RANDOM_0_NP;
 
-    float **population;
-    float **donor_vectors;
-    float **trial_vectors;
-    float *wantedEndpoint;
+    std::vector<std::vector<float>> population;
+    std::vector<std::vector<float>> donor_vectors;
+    std::vector<std::vector<float>> trial_vectors;
+    std::vector<float> wantedEndpoint;
 
     int currentGeneration;
-    float bestIndividualFitness;
-    float* bestIndividual;
+    int localMinCounter;
 
-    // TAGUCHI's OA dependent arrays
-    const float ERROR_WAIST = 0.01f;
-    const float ERROR_SHOULDER = 0.01f;
-    const float ERROR_ELBOW = 0.01f;
-    const float *ERRORS = new float[3] {ERROR_WAIST, ERROR_SHOULDER, ERROR_ELBOW};
+    float bestIndividualFitness;
+    std::vector<float> bestIndividual;
+
+    // TAGUCHI's OA dependent array
+    std::vector<float> errors;
     const float TAGUCHI_OA[4][3] =
             {
-                    {1,  1,  1},
-                    {1,  -1, -1},
-                    {-1, 1,  -1},
-                    {-1, -1, 1}
+                    { 1,  1,  1},
+                    { 1, -1, -1},
+                    {-1,  1, -1},
+                    {-1, -1,  1}
             };
 
 public:
-    OptimizedDE(const int POPULATION_SIZE, const int DIMENSION, const int MAX_GEN_NUMBER, const float CROSSOVER_RATE,
+    OptimizedDE(const Robot3DOF robot, const int POPULATION_SIZE, const int TERM_MAX_GEN_NUMBER,
+                const float TERM_ERROR_THRESH, const int TERM_REPEAT_THRESH, const float CROSSOVER_RATE,
                 const float MUTATION_FACTOR);
-
-    virtual ~OptimizedDE();
 
     float setInitialIndividualValue(const int index);
 
-    float fitnessFunction(const float *vector);
+    float fitnessFunction(std::vector<float> vector);
 
-    float fitnessByTaguchiOA(const float *vector);
+    float fitnessByTaguchiOA(std::vector<float> vector);
 
     void initialize();
 
-    float begin(float *wantedEndpoint);
+    float begin(std::vector<float> wantedEndpoint);
 };
 
 #endif //MAG_DE_OPTIMIZEDDE_H
