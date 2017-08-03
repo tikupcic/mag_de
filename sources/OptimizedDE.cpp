@@ -12,7 +12,7 @@
 // CONSTRUCTOR
 OptimizedDE::OptimizedDE(const Robot3DOF robot, const int POPULATION_SIZE, const int TERM_MAX_GEN_NUMBER,
                          const float TERM_ERROR_THRESH, const int TERM_REPEAT_THRESH,
-                         const float CROSSOVER_RATE, const float MUTATION_FACTOR) :
+                         const float CROSSOVER_RATE, const float MUTATION_FACTOR, const bool USE_TOA) :
         ROBOT(robot),
         POPULATION_SIZE(POPULATION_SIZE),
         DIMENSION(ROBOT.getDimension()),
@@ -20,7 +20,8 @@ OptimizedDE::OptimizedDE(const Robot3DOF robot, const int POPULATION_SIZE, const
         TERM_ERROR_THRESH(TERM_ERROR_THRESH),
         TERM_REPEAT_THRESH(TERM_REPEAT_THRESH),
         CROSSOVER_RATE(CROSSOVER_RATE),
-        MUTATION_FACTOR(MUTATION_FACTOR) {
+        MUTATION_FACTOR(MUTATION_FACTOR),
+        USE_TOA(USE_TOA) {
 
     for (auto &arm: ROBOT.getArms()) {
         min_bounds.push_back(arm.getMinRotation());
@@ -35,6 +36,7 @@ OptimizedDE::OptimizedDE(const Robot3DOF robot, const int POPULATION_SIZE, const
 
 // METHODS
 void OptimizedDE::initialize() {
+    population.clear();
     for (int i = 0; i < POPULATION_SIZE; i++) {
         std::vector<float> temp;
         for (int j = 0; j < DIMENSION; j++) {
@@ -45,10 +47,14 @@ void OptimizedDE::initialize() {
 
     currentGeneration = 0;
     localMinCounter = 0;
+
+    error = 0;
+    errorTOA = 0;
+
     bestIndividualFitness = std::numeric_limits<float>::max();
 }
 
-float OptimizedDE::begin(std::vector<float> wantedEndpoint) {
+void OptimizedDE::begin(std::vector<float> wantedEndpoint) {
     this->wantedEndpoint = wantedEndpoint;
     initialize();
 
@@ -97,8 +103,8 @@ float OptimizedDE::begin(std::vector<float> wantedEndpoint) {
         //selection
         bool foundBetter = false;
         for (int i = 0; i < POPULATION_SIZE; i++) {
-            float trial = fitnessFunction(trial_vectors[i]);
-            float parent = fitnessFunction(population[i]);
+            float trial = USE_TOA ? fitnessByTaguchiOA(trial_vectors[i]) : fitnessFunction(trial_vectors[i]);
+            float parent = USE_TOA ? fitnessByTaguchiOA(population[i]) : fitnessFunction(population[i]);
             if (trial <= parent) {
                 std::swap(population[i], trial_vectors[i]);
                 if (trial < bestIndividualFitness) {
@@ -116,12 +122,16 @@ float OptimizedDE::begin(std::vector<float> wantedEndpoint) {
                 break;
             }
         }
-//        printf("\t> CURRENT (gen %d): %.2f mm\n", currentGeneration, bestIndividualFitness);
+//        printf("\t\t> CURRENT (gen %d): %.2f mm\n", currentGeneration, bestIndividualFitness);
     } while (++currentGeneration < TERM_MAX_GEN_NUMBER && bestIndividualFitness > TERM_ERROR_THRESH);
 
-    printf("> BEST: %.2f mm : [%f, %f, %f]\n", bestIndividualFitness, bestIndividual[0], bestIndividual[1],
-           bestIndividual[2]);
-    return bestIndividualFitness;
+    if (USE_TOA) {
+        error = fitnessFunction(bestIndividual);
+        errorTOA = bestIndividualFitness;
+    } else {
+        error = bestIndividualFitness;
+        errorTOA = fitnessByTaguchiOA(bestIndividual);
+    }
 }
 
 float OptimizedDE::setInitialIndividualValue(const int index) {
@@ -166,4 +176,16 @@ float OptimizedDE::fitnessFunction(std::vector<float> vector) {
     }
 
     return std::sqrt(sum);
+}
+
+const std::vector<float> &OptimizedDE::getBestIndividual() const {
+    return bestIndividual;
+}
+
+float OptimizedDE::getError() const {
+    return error;
+}
+
+float OptimizedDE::getErrorTOA() const {
+    return errorTOA;
 }
